@@ -1,74 +1,219 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AUXÍLIO VIP MJ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ff0000; --bg: #050505; --card: #0c0c0c; }
-        body { 
-            margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; 
-            background: var(--bg); color: #fff; overflow-x: hidden;
+        :root { --primary: #ff0000; --bg: #050505; --card: #0c0c0c; --accent: #00ff9d; --blue: #00d9ff; }
+        @keyframes rgbGlow {
+            0% { border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+            33% { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
+            66% { border-color: var(--blue); box-shadow: 0 0 10px var(--blue); }
+            100% { border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
         }
-        .header { 
-            padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); 
-            box-shadow: 0 0 15px var(--primary); background: #000;
-        }
-        .container { padding: 20px; }
-        .function-card { 
-            background: var(--card); border: 1px solid #1a1a1a; 
-            padding: 15px; border-radius: 8px; margin-bottom: 12px; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .btn-ativar { 
-            width: 100%; padding: 15px; background: var(--primary); 
-            color: #fff; border: none; font-family: 'Orbitron'; 
-            font-weight: bold; border-radius: 5px; cursor: pointer;
-            box-shadow: 0 0 10px var(--primary); margin-top: 20px;
-        }
-        /* Estilo Switch */
-        .switch { position: relative; width: 40px; height: 20px; }
+        body { margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; background: var(--bg); color: #fff; user-select: none; overflow: hidden; }
+
+        /* OVERLAY DE INJEÇÃO */
+        #injecaoOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; font-family: 'Courier Prime', monospace; }
+        .terminal-box { width: 80%; max-width: 400px; color: var(--accent); font-size: 10px; text-align: left; }
+        .progress-bar { width: 100%; height: 4px; background: #222; margin-top: 15px; border-radius: 10px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: var(--accent); transition: 0.1s; box-shadow: 0 0 10px var(--accent); }
+
+        /* LOGIN E PAINEL */
+        #loginOverlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-card { padding: 30px; border: 2px solid var(--primary); text-align: center; width: 85%; max-width: 300px; background: #000; box-shadow: 0 0 15px var(--primary); }
+        input[type="text"] { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #333; color: #fff; font-family: 'Orbitron'; text-align: center; box-sizing: border-box; border-radius: 4px; }
+        .btn-login { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; }
+        #mainPanel { display: none; height: 100vh; flex-direction: column; }
+        .header { padding: 15px; text-align: center; border-bottom: 2px solid var(--primary); animation: rgbGlow 6s infinite linear; }
+        .header h1 { margin: 0; font-size: 14px; letter-spacing: 2px; }
+        .tab-bar { display: flex; background: #000; border-bottom: 1px solid #222; }
+        .tab-btn { flex: 1; padding: 12px; text-align: center; font-size: 8px; cursor: pointer; color: #555; transition: 0.3s; }
+        .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); background: rgba(255,0,0,0.05); }
+        .container { padding: 15px; flex: 1; overflow-y: auto; display: none; padding-bottom: 120px; }
+        .container.active { display: block; }
+        .function-card { background: var(--card); border: 1px solid #1a1a1a; padding: 12px; border-radius: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .info h3 { margin: 0; font-size: 10px; color: #ddd; }
+        .info p { margin: 3px 0 0; font-size: 7px; color: #555; }
+        .switch { position: relative; width: 34px; height: 16px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { 
-            position: absolute; cursor: pointer; inset: 0; 
-            background: #333; border-radius: 20px; transition: .4s; 
-        }
-        .slider:before { 
-            position: absolute; content: ""; height: 14px; width: 14px; 
-            left: 3px; bottom: 3px; background: #fff; transition: .4s; border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; inset: 0; background: #222; border-radius: 20px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background: #fff; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider:before { transform: translateX(18px); }
+        .ff-open-btn { width: 100%; padding: 15px; background: #ffba00; color: #000; border: none; font-family: 'Orbitron'; font-weight: 800; font-size: 10px; border-radius: 4px; cursor: pointer; margin-bottom: 15px; text-transform: uppercase; }
+        .insta-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); display: block; text-decoration: none; color: #fff; padding: 10px; border-radius: 4px; font-size: 9px; font-weight: bold; margin-bottom: 15px; text-align: center; }
+        #btnAtivar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%); width: 80%; max-width: 300px; padding: 15px; background: var(--primary); color: #fff; border: none; font-family: 'Orbitron'; font-weight: bold; transition: 0.5s; z-index: 999; font-size: 10px; }
+        #btnAtivar.show { transform: translateX(-50%) translateY(0); }
+        .info-item { background: #0a0a0a; padding: 12px; border-left: 3px solid var(--primary); margin-bottom: 8px; }
+        .info-item label { display: block; font-size: 7px; color: #444; margin-bottom: 3px; }
+        .info-item span { font-size: 11px; color: var(--blue); }
+        .admin-box { margin-top: 20px; border: 1px solid var(--accent); padding: 10px; background: rgba(0, 255, 157, 0.05); }
+        .hidden-mode { opacity: 0 !important; pointer-events: none !important; }
+        #unhideTrigger { position: fixed; top: 0; left: 0; width: 40px; height: 40px; z-index: 9999; display: none; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1 style="font-size: 18px; margin: 0;">AUXÍLIO VIP MJ</h1>
-        <p style="font-size: 10px; color: var(--primary);">CONECTADO AO REPOSITÓRIO</p>
+    <div id="injecaoOverlay">
+        <div class="terminal-box">
+            <div id="terminalLines"></div>
+            <div class="progress-bar"><div id="pFill" class="progress-fill"></div></div>
+            <div id="pPercent" style="margin-top:5px; text-align:right;">0%</div>
+        </div>
     </div>
 
-    <div class="container">
-        <div class="function-card">
-            <div>
-                <h3 style="margin:0; font-size:12px;">AIMLOCK 360°</h3>
-                <p style="margin:0; font-size:8px; color:#555;">Trava automática na cabeça</p>
-            </div>
-            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-        </div>
+    <div id="unhideTrigger" onclick="togglePanic()"></div>
 
-        <div class="function-card">
-            <div>
-                <h3 style="margin:0; font-size:12px;">BYPASS ANTICHEAT</h3>
-                <p style="margin:0; font-size:8px; color:#555;">Proteção anti-ban ativa</p>
-            </div>
-            <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+    <div id="loginOverlay">
+        <div class="login-card">
+            <h2 style="color:var(--primary); font-size:16px; margin:0;">AUXÍLIO VIP MJ</h2>
+            <input type="text" id="keyInput" placeholder="COLE SUA KEY AQUI">
+            <button class="btn-login" onclick="fazerLogin()">ATIVAR ACESSO</button>
+            <div id="loginMsg" style="color:red; font-size:9px; margin-top:10px; font-weight: bold;"></div>
         </div>
-
-        <button class="btn-ativar" onclick="alert('Injetando Scripts...')">APLICAR NO FREE FIRE</button>
     </div>
 
+    <button id="btnAtivar" onclick="aplicarAlteracoes()">APLICAR ALTERAÇÕES</button>
+
+    <div id="mainPanel">
+        <div class="header"><h1>AUXÍLIO VIP MJ</h1></div>
+        <div class="tab-bar">
+            <div class="tab-btn active" onclick="switchTab(0)">COMBATE</div>
+            <div class="tab-btn" onclick="switchTab(1)">SISTEMA</div>
+            <div class="tab-btn" onclick="switchTab(2)">CONTA</div>
+        </div>
+
+        <div id="tab0" class="container active">
+            <div id="btnHackYT" style="display:none; margin-bottom: 15px;">
+                <button class="ff-open-btn" style="background:var(--accent); border: 2px solid #fff;" onclick="window.location.href='https://www.instagram.com/miguel_v_.7'">ATIVAR HACK (CLIQUE AQUI)</button>
+            </div>
+            
+            <div class="function-card" style="border-color: var(--blue);"><div class="info"><h3>SÓ AO ATIRAR</h3><p>Filtro de ativação por disparo</p></div><label class="switch"><input type="checkbox" onchange="notificarMudanca()"><span class="slider"></span></label></div>
+            <div class="function-card"><div class="info"><h3>AIMLOCK 360°</h3><p>Trava magnética no alvo</p></div><label class="switch"><input type="checkbox" onchange="notificarMudanca()"><span class="slider"></span></label></div>
+            <div class="function-card"><div class="info"><h3>HEADTRICK V15</h3><p>Focar região do pescoço</p></div><label class="switch"><input type="checkbox" onchange="notificarMudanca()"><span class="slider"></span></label></div>
+            <div class="function-card"><div class="info"><h3>AUTO HEADSHOT</h3><p>Calibração de HS VIP</p></div><label class="switch"><input type="checkbox" onchange="notificarMudanca()"><span class="slider"></span></label></div>
+            
+            <div id="fovArea">
+                <div style="display:flex; justify-content:space-between; font-size:9px; margin-top:10px;"><span>DISTÂNCIA FOV</span><span id="fovVal" style="color:var(--primary)">5</span></div>
+                <input type="range" min="0" max="10" step="1" value="5" oninput="document.getElementById('fovVal').innerText = this.value; notificarMudanca()">
+            </div>
+            <button style="width:100%; padding:10px; background:#111; border:1px dashed #333; color:#444; font-family:'Orbitron'; font-size:8px; margin-top:15px;" onclick="togglePanic()">MODO PÂNICO</button>
+        </div>
+
+        <div id="tab1" class="container">
+            <button class="ff-open-btn" onclick="window.location.href='freefire://'">⚡ ABRIR FREE FIRE</button>
+            <div class="function-card"><div class="info"><h3>OTIMIZAR PING</h3><p>Reduzir latência</p></div><label class="switch"><input type="checkbox" onchange="notificarMudanca()"><span class="slider"></span></label></div>
+            <div class="function-card"><div class="info"><h3>ESTABILIZAR FPS</h3><p>Fixar taxa de quadros</p></div><label class="switch"><input type="checkbox" onchange="notificarMudanca()"><span class="slider"></span></label></div>
+            <div class="function-card" style="border-color: var(--accent);"><div class="info"><h3>BYPASS ANTICHEAT</h3><p>Proteção ativa</p></div><label class="switch"><input type="checkbox" checked onchange="notificarMudanca()"><span class="slider"></span></label></div>
+            <div class="function-card"><div class="info"><h3>MODO DESEMPENHO</h3><p>Otimização total</p></div><label class="switch"><input type="checkbox" onchange="notificarMudanca()"><span class="slider"></span></label></div>
+        </div>
+
+        <div id="tab2" class="container">
+            <div class="info-item"><label>KEY ATIVA</label><span id="displayKey">---</span></div>
+            <div class="info-item"><label>VALIDADE</label><span id="displayTime">---</span></div>
+            <a href="https://www.instagram.com/miguel_v_.7" class="insta-btn">SUPORTE: @MIGUEL_V_.7</a>
+            
+            <div id="adminPanel" class="admin-box" style="display:none;">
+                <h4 style="font-size:9px; color:var(--accent); margin:0 0 10px 0; text-align:center;">PAINEL MASTER</h4>
+                <button onclick="executarComandoMaster()" style="width:100%; padding:8px; background:red; color:#fff; font-size:8px; border:none;">REDIRECIONAR TODOS</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userAtual = null;
+
+        function fazerLogin() {
+            const key = document.getElementById('keyInput').value.trim();
+            const db = JSON.parse(localStorage.getItem('mj_d')) || [];
+            
+            // KEY MESTRE
+            if(key === "110211") { 
+                entrarNoPainel({key: "110211", owner: "ADMIN_MASTER", status: "Ativa", duracao: 9e15}, true); 
+                return; 
+            }
+            
+            // BUSCA NO BANCO
+            const found = db.find(x => x.key === key);
+            if (!found || found.status !== 'Ativa') { 
+                document.getElementById('loginMsg').innerText = "KEY INVÁLIDA!"; 
+                return; 
+            }
+            
+            // Se for do DONO no banco de dados, não é Admin Master (110211), mas abre tudo
+            entrarNoPainel(found, false);
+        }
+
+        function entrarNoPainel(dados, isAdminMaster) {
+            userAtual = dados;
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainPanel').style.display = 'flex';
+            document.getElementById('displayKey').innerText = dados.key;
+            
+            // REGRA YT: ESCONDE FOV E MOSTRA BOTÃO
+            const isYT = (dados.owner === "YT" || dados.owner === "yt");
+            if(isYT) {
+                document.getElementById('fovArea').style.display = 'none';
+                document.getElementById('btnHackYT').style.display = 'block';
+            } else {
+                document.getElementById('fovArea').style.display = 'block';
+                document.getElementById('btnHackYT').style.display = 'none';
+            }
+            
+            // PAINEL MASTER APENAS PARA KEY 110211
+            if(isAdminMaster) { document.getElementById('adminPanel').style.display = 'block'; }
+            
+            iniciarRelogio(dados);
+        }
+
+        function aplicarAlteracoes() {
+            const overlay = document.getElementById('injecaoOverlay');
+            const term = document.getElementById('terminalLines');
+            const fill = document.getElementById('pFill');
+            const perc = document.getElementById('pPercent');
+            overlay.style.display = 'flex'; term.innerHTML = "";
+            let p = 0; let i = 0;
+            const msgs = ["> Localizando offsets...", "> Bypass Anti-Cheat...", "> Injetando scripts...", "> Sucesso!"];
+            const intv = setInterval(() => {
+                p += Math.floor(Math.random() * 5) + 2; if(p > 100) p = 100;
+                fill.style.width = p + "%"; perc.innerText = p + "%";
+                if(p % 25 === 0 && i < msgs.length) { term.innerHTML += `<div>${msgs[i]}</div>`; i++; }
+                if(p >= 100) {
+                    clearInterval(intv);
+                    setTimeout(() => { overlay.style.display = 'none'; document.getElementById('btnAtivar').classList.remove('show'); }, 500);
+                }
+            }, 50);
+        }
+
+        function executarComandoMaster() {
+            const senha = prompt("SENHA DE COMANDO:");
+            if(senha === "11") {
+                alert("REDIRECIONAMENTO GLOBAL ATIVADO!");
+                window.location.href = 'https://www.instagram.com/miguel_v_.7';
+            } else { alert("NEGADO!"); }
+        }
+
+        function iniciarRelogio(dados) {
+            const att = () => {
+                const r = dados.validade - Date.now();
+                document.getElementById('displayTime').innerText = dados.duracao > 1e12 ? "VITALÍCIO" : Math.floor(r/36e5) + " HORAS";
+            };
+            att(); setInterval(att, 60000);
+        }
+
+        function switchTab(idx) {
+            document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+            document.querySelectorAll('.container').forEach((c, i) => c.classList.toggle('active', i === idx));
+        }
+        function notificarMudanca() { document.getElementById('btnAtivar').classList.add('show'); }
+        function togglePanic() {
+            const isHidden = document.getElementById('mainPanel').classList.toggle('hidden-mode');
+            document.getElementById('unhideTrigger').style.display = isHidden ? 'block' : 'none';
+        }
+    </script>
 </body>
 </html>
 
