@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUXÍLIO VIP MJ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff0000; --bg: #050505; --card: #0c0c0c; }
+        body { 
+            margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; 
+            background: var(--bg); color: #fff; overflow-x: hidden;
+        }
+        .header { 
+            padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); 
+            box-shadow: 0 0 15px var(--primary); background: #000;
+        }
+        .container { padding: 20px; }
+        .function-card { 
+            background: var(--card); border: 1px solid #1a1a1a; 
+            padding: 15px; border-radius: 8px; margin-bottom: 12px; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .btn-ativar { 
+            width: 100%; padding: 15px; background: var(--primary); 
+            color: #fff; border: none; font-family: 'Orbitron'; 
+            font-weight: bold; border-radius: 5px; cursor: pointer;
+            box-shadow: 0 0 10px var(--primary); margin-top: 20px;
+        }
+        /* Estilo Switch */
+        .switch { position: relative; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { 
+            position: absolute; cursor: pointer; inset: 0; 
+            background: #333; border-radius: 20px; transition: .4s; 
+        }
+        .slider:before { 
+            position: absolute; content: ""; height: 14px; width: 14px; 
+            left: 3px; bottom: 3px; background: #fff; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 style="font-size: 18px; margin: 0;">AUXÍLIO VIP MJ</h1>
+        <p style="font-size: 10px; color: var(--primary);">CONECTADO AO REPOSITÓRIO</p>
+    </div>
+
+    <div class="container">
+        <div class="function-card">
+            <div>
+                <h3 style="margin:0; font-size:12px;">AIMLOCK 360°</h3>
+                <p style="margin:0; font-size:8px; color:#555;">Trava automática na cabeça</p>
+            </div>
+            <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="function-card">
+            <div>
+                <h3 style="margin:0; font-size:12px;">BYPASS ANTICHEAT</h3>
+                <p style="margin:0; font-size:8px; color:#555;">Proteção anti-ban ativa</p>
+            </div>
+            <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <button class="btn-ativar" onclick="alert('Injetando Scripts...')">APLICAR NO FREE FIRE</button>
+    </div>
+
+</body>
+</html>
+
